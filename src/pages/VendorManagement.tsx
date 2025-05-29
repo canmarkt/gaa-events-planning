@@ -2,119 +2,88 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Heart, Users, DollarSign, Calendar, CheckCircle, Clock, AlertTriangle, Phone, Mail } from "lucide-react";
+import { Heart, Calendar, Users, DollarSign, Star, MapPin, Phone, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const VendorManagement = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
   const vendors = [
     {
       id: 1,
-      name: "Grand Ballroom",
-      category: "Venue",
-      contact: "Sarah Johnson",
-      phone: "(555) 123-4567",
-      email: "sarah@grandballroom.com",
-      contractSigned: true,
-      totalAmount: 8000,
-      paidAmount: 3000,
-      nextPayment: { amount: 2500, dueDate: "2024-06-15" },
-      status: "confirmed",
-      rating: 4.8,
-      notes: "Beautiful venue with excellent service"
+      name: "Perfect Moments Photography",
+      category: "photographer",
+      rating: 4.9,
+      reviews: 127,
+      price: 2500,
+      location: "Downtown",
+      image: "/placeholder.svg",
+      description: "Capturing your special moments with artistic flair",
+      contact: { phone: "(555) 123-4567", email: "info@perfectmoments.com" }
     },
     {
       id: 2,
-      name: "Gourmet Catering Co.",
-      category: "Catering",
-      contact: "Mike Chen",
-      phone: "(555) 234-5678",
-      email: "mike@gourmetcatering.com",
-      contractSigned: true,
-      totalAmount: 6000,
-      paidAmount: 2000,
-      nextPayment: { amount: 2000, dueDate: "2024-07-01" },
-      status: "confirmed",
-      rating: 4.6,
-      notes: "Amazing food quality, great for dietary restrictions"
+      name: "Elegant Eats Catering",
+      category: "catering",
+      rating: 4.8,
+      reviews: 89,
+      price: 75,
+      location: "City Center",
+      image: "/placeholder.svg",
+      description: "Gourmet cuisine for your perfect wedding day",
+      contact: { phone: "(555) 234-5678", email: "events@eleganteats.com" }
     },
     {
       id: 3,
-      name: "Smith Photography",
-      category: "Photography",
-      contact: "David Smith",
-      phone: "(555) 345-6789",
-      email: "david@smithphoto.com",
-      contractSigned: true,
-      totalAmount: 3000,
-      paidAmount: 3000,
-      nextPayment: null,
-      status: "paid",
-      rating: 5.0,
-      notes: "Fantastic portfolio, very professional"
+      name: "Bella Flora Designs",
+      category: "florist",
+      rating: 4.7,
+      reviews: 156,
+      price: 800,
+      location: "Garden District",
+      image: "/placeholder.svg",
+      description: "Beautiful floral arrangements for every occasion",
+      contact: { phone: "(555) 345-6789", email: "flowers@bellaflora.com" }
     },
     {
       id: 4,
-      name: "Bloom & Blossom",
-      category: "Flowers",
-      contact: "Lisa Martinez",
-      phone: "(555) 456-7890",
-      email: "lisa@bloomblossom.com",
-      contractSigned: false,
-      totalAmount: 1500,
-      paidAmount: 500,
-      nextPayment: { amount: 1000, dueDate: "2024-08-01" },
-      status: "pending",
-      rating: 4.4,
-      notes: "Waiting for final floral arrangement confirmation"
-    },
-    {
-      id: 5,
-      name: "DJ Beats",
-      category: "Music",
-      contact: "Alex Rodriguez",
-      phone: "(555) 567-8901",
-      email: "alex@djbeats.com",
-      contractSigned: true,
-      totalAmount: 1200,
-      paidAmount: 600,
-      nextPayment: { amount: 600, dueDate: "2024-08-10" },
-      status: "confirmed",
-      rating: 4.3,
-      notes: "Great music selection, very responsive"
+      name: "Sound Waves DJ",
+      category: "entertainment",
+      rating: 4.6,
+      reviews: 94,
+      price: 1200,
+      location: "Uptown",
+      image: "/placeholder.svg",
+      description: "Professional DJ services to keep your party going",
+      contact: { phone: "(555) 456-7890", email: "booking@soundwavesdj.com" }
     }
   ];
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'confirmed': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'paid': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const categories = [
+    { id: "all", name: "All Vendors" },
+    { id: "photographer", name: "Photography" },
+    { id: "catering", name: "Catering" },
+    { id: "florist", name: "Florists" },
+    { id: "entertainment", name: "Entertainment" },
+    { id: "venue", name: "Venues" }
+  ];
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'confirmed': return <CheckCircle className="h-4 w-4" />;
-      case 'pending': return <Clock className="h-4 w-4" />;
-      case 'paid': return <CheckCircle className="h-4 w-4" />;
-      default: return <AlertTriangle className="h-4 w-4" />;
-    }
-  };
+  const filteredVendors = vendors.filter(vendor => {
+    const matchesSearch = vendor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         vendor.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || vendor.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
-  const totalBudget = vendors.reduce((sum, vendor) => sum + vendor.totalAmount, 0);
-  const totalPaid = vendors.reduce((sum, vendor) => sum + vendor.paidAmount, 0);
-  const totalRemaining = totalBudget - totalPaid;
-
-  const upcomingPayments = vendors
-    .filter(vendor => vendor.nextPayment)
-    .sort((a, b) => new Date(a.nextPayment.dueDate) - new Date(b.nextPayment.dueDate));
+  const totalBudget = 15000;
+  const spentAmount = vendors.reduce((sum, vendor) => sum + vendor.price, 0);
+  const remainingBudget = totalBudget - spentAmount;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-white/20">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -129,228 +98,164 @@ const VendorManagement = () => {
             <Link to="/dashboard" className="text-gray-600 hover:text-gray-900 transition-colors">Dashboard</Link>
             <Link to="/seating" className="text-gray-600 hover:text-gray-900 transition-colors">Seating</Link>
             <Link to="/registry" className="text-gray-600 hover:text-gray-900 transition-colors">Registry</Link>
+            <Link to="/budget" className="text-gray-600 hover:text-gray-900 transition-colors">Budget</Link>
           </nav>
-          <Button className="bg-gradient-to-r from-purple-500 to-indigo-600">Add Vendor</Button>
+          <Button variant="outline">Profile</Button>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-            Vendor Management
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            Vendor Marketplace
           </h1>
-          <p className="text-gray-600">Manage contracts, payments, and communications with your vendors</p>
+          <p className="text-gray-600">Find and book the perfect vendors for your special day</p>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Users className="h-8 w-8 text-purple-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{vendors.length}</div>
-              <div className="text-sm text-gray-600">Total Vendors</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6 text-center">
-              <DollarSign className="h-8 w-8 text-green-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold">${totalBudget.toLocaleString()}</div>
-              <div className="text-sm text-gray-600">Total Contract Value</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6 text-center">
-              <CheckCircle className="h-8 w-8 text-blue-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold">${totalPaid.toLocaleString()}</div>
-              <div className="text-sm text-gray-600">Total Paid</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Clock className="h-8 w-8 text-orange-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold">${totalRemaining.toLocaleString()}</div>
-              <div className="text-sm text-gray-600">Remaining Payments</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="vendors" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="vendors">All Vendors</TabsTrigger>
-            <TabsTrigger value="payments">Payment Schedule</TabsTrigger>
-            <TabsTrigger value="contracts">Contracts</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="vendors" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {vendors.map((vendor) => (
-                <Card key={vendor.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{vendor.name}</CardTitle>
-                        <CardDescription>{vendor.category}</CardDescription>
-                      </div>
-                      <Badge className={getStatusColor(vendor.status)}>
-                        {getStatusIcon(vendor.status)}
-                        <span className="ml-1 capitalize">{vendor.status}</span>
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {/* Contact Info */}
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <div className="font-medium text-sm mb-2">{vendor.contact}</div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <Phone className="h-3 w-3" />
-                          <span>{vendor.phone}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
-                          <span>{vendor.email}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Payment Progress */}
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span>Payment Progress</span>
-                        <span>${vendor.paidAmount.toLocaleString()} / ${vendor.totalAmount.toLocaleString()}</span>
-                      </div>
-                      <Progress value={(vendor.paidAmount / vendor.totalAmount) * 100} className="h-2" />
-                    </div>
-
-                    {/* Next Payment */}
-                    {vendor.nextPayment && (
-                      <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <div className="font-medium text-sm text-yellow-800">Next Payment</div>
-                            <div className="text-xs text-yellow-600">Due: {vendor.nextPayment.dueDate}</div>
-                          </div>
-                          <div className="text-lg font-bold text-yellow-800">
-                            ${vendor.nextPayment.amount.toLocaleString()}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Contract Status */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Contract Signed:</span>
-                      <Badge variant={vendor.contractSigned ? "default" : "destructive"}>
-                        {vendor.contractSigned ? "Yes" : "Pending"}
-                      </Badge>
-                    </div>
-
-                    {/* Rating */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Rating:</span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm font-medium">{vendor.rating}</span>
-                        <span className="text-yellow-500">⭐</span>
-                      </div>
-                    </div>
-
-                    {/* Notes */}
-                    {vendor.notes && (
-                      <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-                        {vendor.notes}
-                      </div>
-                    )}
-
-                    {/* Actions */}
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="flex-1">
-                        Contact
-                      </Button>
-                      <Button size="sm" variant="outline" className="flex-1">
-                        Edit
-                      </Button>
-                      <Button size="sm" className="flex-1 bg-gradient-to-r from-purple-500 to-indigo-600">
-                        Pay Now
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="payments" className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Budget Overview */}
             <Card>
               <CardHeader>
-                <CardTitle>Upcoming Payments</CardTitle>
-                <CardDescription>Stay on top of your payment schedule</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <DollarSign className="h-5 w-5" />
+                  Budget Overview
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {upcomingPayments.map((vendor) => (
-                    <div key={vendor.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                      <div>
-                        <div className="font-medium">{vendor.name}</div>
-                        <div className="text-sm text-gray-600">{vendor.category}</div>
-                        <div className="text-xs text-gray-500">Due: {vendor.nextPayment.dueDate}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold">${vendor.nextPayment.amount.toLocaleString()}</div>
-                        <Button size="sm" className="mt-2 bg-gradient-to-r from-purple-500 to-indigo-600">
-                          Pay Now
-                        </Button>
-                      </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Spent</span>
+                      <span>${spentAmount.toLocaleString()}</span>
                     </div>
-                  ))}
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-gradient-to-r from-pink-500 to-purple-600 h-2 rounded-full" 
+                        style={{width: `${(spentAmount / totalBudget) * 100}%`}}
+                      ></div>
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-600">${remainingBudget.toLocaleString()}</div>
+                    <div className="text-sm text-gray-500">Remaining</div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          </TabsContent>
 
-          <TabsContent value="contracts" className="space-y-6">
+            {/* Search & Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Search & Filter</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Input
+                  placeholder="Search vendors..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">Category</label>
+                  <select 
+                    className="w-full p-2 border rounded-md"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                  >
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {vendors.map((vendor) => (
-                <Card key={vendor.id}>
+              {filteredVendors.map((vendor) => (
+                <Card key={vendor.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg">{vendor.name}</CardTitle>
-                        <CardDescription>{vendor.category}</CardDescription>
-                      </div>
-                      <Badge variant={vendor.contractSigned ? "default" : "destructive"}>
-                        {vendor.contractSigned ? "Signed" : "Pending"}
-                      </Badge>
-                    </div>
+                    <img 
+                      src={vendor.image} 
+                      alt={vendor.name}
+                      className="w-full h-48 object-cover rounded-t-lg mb-4"
+                    />
+                    <CardTitle className="flex items-center justify-between">
+                      {vendor.name}
+                      <Badge variant="secondary">{vendor.category}</Badge>
+                    </CardTitle>
+                    <CardDescription>{vendor.description}</CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm">Contract Value:</span>
-                        <span className="font-medium">${vendor.totalAmount.toLocaleString()}</span>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span className="font-medium">{vendor.rating}</span>
+                        <span className="text-gray-500">({vendor.reviews} reviews)</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm">Contact:</span>
-                        <span className="font-medium">{vendor.contact}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <MapPin className="h-4 w-4" />
+                      <span>{vendor.location}</span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="text-2xl font-bold text-green-600">
+                        ${vendor.price.toLocaleString()}
                       </div>
-                      <div className="flex gap-2 mt-4">
-                        <Button size="sm" variant="outline" className="flex-1">
-                          View Contract
-                        </Button>
-                        <Button size="sm" variant="outline" className="flex-1">
-                          Download
-                        </Button>
+                      <div className="text-sm text-gray-500">
+                        {vendor.category === "catering" ? "per person" : "starting from"}
                       </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Phone className="h-4 w-4" />
+                        <span>{vendor.contact.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Mail className="h-4 w-4" />
+                        <span>{vendor.contact.email}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600">
+                        Book Now
+                      </Button>
+                      <Button variant="outline" className="flex-1">
+                        View Details
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-          </TabsContent>
-        </Tabs>
+
+            {filteredVendors.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-gray-500 text-lg">No vendors found matching your criteria</div>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedCategory("all");
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
