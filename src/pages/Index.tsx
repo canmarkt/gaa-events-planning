@@ -107,10 +107,9 @@ const Index = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-          Your Dream Wedding Starts Here
-        </h1>
+          We Make Things Happen
         <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Discover the secrets to a stress-free wedding—and unlock exclusive planning tools, insider tips, and vendor deals.
+          Unlock the secrets to a stress-free wedding—and more.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           {!isAuthenticated && (
@@ -131,10 +130,10 @@ const Index = () => {
       {/* Features Section */}
       <section id="features" className="container mx-auto px-4 py-20">
         <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-          Everything You Need to Plan Your Perfect Wedding
+          All-In-One Tools for Your Wedding
         </h2>
         <p className="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto">
-          Our comprehensive platform brings together all the tools and services you need for seamless wedding planning.
+          We combine all the tools and services you need.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -184,7 +183,7 @@ const Index = () => {
             Ready to Start Planning?
           </h2>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of couples who have planned their dream weddings with WeddingPro.
+            Join thousands who planned their perfect day.
           </p>
           <Link to="/auth">
             <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-600 text-lg px-8 py-4">
@@ -204,7 +203,7 @@ const Index = () => {
                 <span className="text-2xl font-bold">WeddingPro</span>
               </div>
               <p className="text-gray-400">
-                Making wedding planning beautiful, simple, and stress-free.
+                We Make Things Happen
               </p>
             </div>
             
