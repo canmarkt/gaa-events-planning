@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const VendorDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user, profile, logout } = useAuth(); // Destructure profile
   const [activeTab, setActiveTab] = useState("overview");
 
   const upcomingBookings = [
