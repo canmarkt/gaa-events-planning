@@ -9,7 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          company_name: string | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          is_approved: boolean
+          last_name: string
+          partner_name: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          services: string[] | null
+          updated_at: string
+          wedding_date: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string
+          email: string
+          first_name: string
+          id: string
+          is_approved?: boolean
+          last_name: string
+          partner_name?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          services?: string[] | null
+          updated_at?: string
+          wedding_date?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          is_approved?: boolean
+          last_name?: string
+          partner_name?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          services?: string[] | null
+          updated_at?: string
+          wedding_date?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +62,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "vendor" | "couple"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +177,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "vendor", "couple"],
+    },
   },
 } as const

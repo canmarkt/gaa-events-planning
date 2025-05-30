@@ -6,17 +6,30 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [userType, setUserType] = useState<"couple" | "vendor" | "admin">("couple");
   const { login, isLoading } = useAuth();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password, userType);
+    try {
+      await login(email, password);
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Invalid email or password",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -31,20 +44,6 @@ const LoginForm = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="userType">I am a...</Label>
-            <select
-              id="userType"
-              value={userType}
-              onChange={(e) => setUserType(e.target.value as "couple" | "vendor" | "admin")}
-              className="w-full p-2 border rounded-md"
-            >
-              <option value="couple">Couple</option>
-              <option value="vendor">Vendor</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
