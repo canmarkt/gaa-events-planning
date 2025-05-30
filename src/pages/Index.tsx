@@ -110,8 +110,7 @@ const Index = () => {
           Your Dream Wedding Starts Here
         </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Plan your perfect day with our comprehensive suite of tools. From budget tracking to vendor management, 
-          we've got everything you need to make your wedding planning journey smooth and enjoyable.
+          Discover the secrets to a stress-free wedding—and unlock exclusive planning tools, insider tips, and vendor deals.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           {!isAuthenticated && (
@@ -240,7 +239,7 @@ const Index = () => {
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 WeddingPro. All rights reserved.</p>
+            <p>&copy; 2025 GAA WeddingPro. All rights reserved.</p>
           </div>
         </div>
       </footer>
