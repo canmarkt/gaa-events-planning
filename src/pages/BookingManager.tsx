@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import BookingCalendar from "@/components/calendar/BookingCalendar";
 
 const BookingManager = () => {
-  const { user, logout } = useAuth();
+  const { user, profile, logout } = useAuth(); // Make sure useAuth returns profile
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
@@ -15,7 +15,10 @@ const BookingManager = () => {
       <header className="bg-white/80 backdrop-blur-md border-b border-white/20">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <Link to={user?.userType === 'vendor' ? '/vendor-dashboard' : '/dashboard'} className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+            <Link
+              to={profile?.role === 'vendor' ? '/vendor-dashboard' : '/dashboard'}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+            >
               <ArrowLeft className="h-5 w-5" />
               Back to Dashboard
             </Link>
@@ -27,7 +30,9 @@ const BookingManager = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600">Welcome, {user?.firstName}</span>
+            <span className="text-sm text-gray-600">
+              Welcome, {profile?.first_name || 'Guest'}
+            </span>
             <Button variant="outline" onClick={logout}>Logout</Button>
           </div>
         </div>
