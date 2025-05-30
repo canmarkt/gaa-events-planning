@@ -203,7 +203,7 @@ const Index = () => {
                 <span className="text-2xl font-bold">WeddingPro</span>
               </div>
               <p className="text-gray-400">
-                We Make Things Happen
+                We Make Things Happen 
               </p>
             </div>
             
