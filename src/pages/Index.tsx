@@ -109,7 +109,7 @@ const Index = () => {
         <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
           We Make Things Happen
         <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Unlock the secrets to a stress-free wedding—and more.
+          Unlock the secrets to a stress-free wedding.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           {!isAuthenticated && (
