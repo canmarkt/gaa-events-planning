@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, profile } = useAuth();
 
   const features = [
     {
@@ -79,7 +79,7 @@ const Index = () => {
           </nav>
           <div className="flex space-x-2">
             {isAuthenticated ? (
-              <Link to={user?.userType === 'vendor' ? '/vendor-dashboard' : '/dashboard'}>
+              <Link to={profile?.role === 'vendor' ? '/vendor-dashboard' : '/dashboard'}>
                 <Button className="bg-gradient-to-r from-pink-500 to-purple-600">
                   Dashboard
                 </Button>
