@@ -108,6 +108,7 @@ const Index = () => {
       <section className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
           We Make Things Happen
+        </h1>
         <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
           Unlock the secrets to a stress-free wedding.
         </p>

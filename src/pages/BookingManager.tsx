@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import BookingCalendar from "@/components/calendar/BookingCalendar";
 
 const BookingManager = () => {
-  const { user, profile, logout } = useAuth(); // Make sure useAuth returns profile
+  const { user, profile, logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
