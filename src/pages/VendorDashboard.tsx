@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +7,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const VendorDashboard = () => {
-  const { user, profile, logout } = useAuth(); // Destructure profile
+  const { user, profile, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
 
   const upcomingBookings = [
@@ -65,26 +64,26 @@ const VendorDashboard = () => {
     avgRating: 4.9
   };
 
-return (
-  <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
-    {/* Header */}
-    <header className="bg-white/80 backdrop-blur-md border-b border-white/20">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <Heart className="h-8 w-8 text-pink-500" />
-          <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            WeddingPro
-          </span>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Bell className="h-6 w-6 text-gray-600" />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      {/* Header */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-white/20">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Welcome, {profile?.first_name}</span>
-            <Button variant="outline" onClick={logout}>Logout</Button>
+            <Heart className="h-8 w-8 text-pink-500" />
+            <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              WeddingPro
+            </span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Bell className="h-6 w-6 text-gray-600" />
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-600">Welcome, {profile?.first_name}</span>
+              <Button variant="outline" onClick={logout}>Logout</Button>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import VendorDashboard from "./pages/VendorDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminSetup from "./pages/AdminSetup";
 import PendingApproval from "./pages/PendingApproval";
 import SeatingPlanner from "./pages/SeatingPlanner";
 import GiftRegistry from "./pages/GiftRegistry";
@@ -86,6 +87,7 @@ const AppRoutes = () => {
     <Routes>
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Auth />} />
+      <Route path="/admin-setup" element={<AdminSetup />} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={
