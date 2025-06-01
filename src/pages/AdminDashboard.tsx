@@ -37,22 +37,26 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
       
-      // Fetch pending vendors - explicitly select role field
-      const { data: pending } = await supabase
+      // Fetch pending vendors
+      const { data: pending, error: pendingError } = await supabase
         .from('profiles')
         .select('id, email, first_name, last_name, role, is_approved, company_name, services, created_at')
         .eq('role', 'vendor')
         .eq('is_approved', false)
         .order('created_at', { ascending: false });
 
-      // Fetch all users - explicitly select role field
-      const { data: users } = await supabase
+      if (pendingError) throw pendingError;
+
+      // Fetch all users
+      const { data: users, error: usersError } = await supabase
         .from('profiles')
         .select('id, email, first_name, last_name, role, is_approved, company_name, services, created_at')
         .order('created_at', { ascending: false });
 
-      setPendingVendors((pending || []) as Profile[]);
-      setAllUsers((users || []) as Profile[]);
+      if (usersError) throw usersError;
+
+      setPendingVendors(pending || []);
+      setAllUsers(users || []);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({

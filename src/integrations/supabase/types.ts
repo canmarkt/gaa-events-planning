@@ -19,6 +19,7 @@ export type Database = {
           is_approved: boolean
           last_name: string
           partner_name: string | null
+          role: Database["public"]["Enums"]["app_role"]
           services: string[] | null
           updated_at: string
           wedding_date: string | null
@@ -32,6 +33,7 @@ export type Database = {
           is_approved?: boolean
           last_name: string
           partner_name?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
           services?: string[] | null
           updated_at?: string
           wedding_date?: string | null
@@ -45,6 +47,7 @@ export type Database = {
           is_approved?: boolean
           last_name?: string
           partner_name?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
           services?: string[] | null
           updated_at?: string
           wedding_date?: string | null
