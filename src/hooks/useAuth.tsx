@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from "@/integrations/supabase/client";
@@ -56,7 +57,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (error) throw error;
-      setProfile(data);
+      
+      // Filter out the unwanted enum value and ensure type safety
+      if (data && (data.role === 'admin' || data.role === 'vendor' || data.role === 'couple')) {
+        setProfile(data as UserProfile);
+      } else {
+        console.error('Invalid role received from database:', data?.role);
+        setProfile(null);
+      }
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);

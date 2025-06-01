@@ -55,8 +55,17 @@ const AdminDashboard = () => {
 
       if (usersError) throw usersError;
 
-      setPendingVendors(pending || []);
-      setAllUsers(users || []);
+      // Filter out invalid roles and ensure type safety
+      const validPending = (pending || []).filter((user): user is Profile => 
+        user.role === 'admin' || user.role === 'vendor' || user.role === 'couple'
+      );
+      
+      const validUsers = (users || []).filter((user): user is Profile => 
+        user.role === 'admin' || user.role === 'vendor' || user.role === 'couple'
+      );
+
+      setPendingVendors(validPending);
+      setAllUsers(validUsers);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast({
