@@ -52,12 +52,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, email, first_name, last_name, role, is_approved, company_name, services, wedding_date, partner_name')
         .eq('id', userId)
         .single();
 
       if (error) throw error;
-      setProfile(data);
+      setProfile(data as UserProfile);
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);
