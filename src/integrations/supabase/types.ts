@@ -19,7 +19,6 @@ export type Database = {
           is_approved: boolean
           last_name: string
           partner_name: string | null
-          role: Database["public"]["Enums"]["app_role"]
           services: string[] | null
           updated_at: string
           wedding_date: string | null
@@ -33,7 +32,6 @@ export type Database = {
           is_approved?: boolean
           last_name: string
           partner_name?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
           services?: string[] | null
           updated_at?: string
           wedding_date?: string | null
@@ -47,7 +45,6 @@ export type Database = {
           is_approved?: boolean
           last_name?: string
           partner_name?: string | null
-          role?: Database["public"]["Enums"]["app_role"]
           services?: string[] | null
           updated_at?: string
           wedding_date?: string | null
@@ -62,7 +59,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      app_role: "admin" | "vendor" | "couple"
+      app_role: "admin" | "vendor" | "couple" | "new_value_if_needed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -178,7 +175,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "vendor", "couple"],
+      app_role: ["admin", "vendor", "couple", "new_value_if_needed"],
     },
   },
 } as const
