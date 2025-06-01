@@ -56,13 +56,23 @@ const AdminDashboard = () => {
       if (usersError) throw usersError;
 
       // Filter out invalid roles and ensure type safety
-      const validPending = (pending || []).filter((user): user is Profile => 
-        user.role === 'admin' || user.role === 'vendor' || user.role === 'couple'
-      );
+      const validPending = (pending || [])
+        .filter(user => user.role === 'admin' || user.role === 'vendor' || user.role === 'couple')
+        .map(user => ({
+          ...user,
+          role: user.role as 'admin' | 'vendor' | 'couple',
+          company_name: user.company_name || undefined,
+          services: user.services || undefined
+        } as Profile));
       
-      const validUsers = (users || []).filter((user): user is Profile => 
-        user.role === 'admin' || user.role === 'vendor' || user.role === 'couple'
-      );
+      const validUsers = (users || [])
+        .filter(user => user.role === 'admin' || user.role === 'vendor' || user.role === 'couple')
+        .map(user => ({
+          ...user,
+          role: user.role as 'admin' | 'vendor' | 'couple',
+          company_name: user.company_name || undefined,
+          services: user.services || undefined
+        } as Profile));
 
       setPendingVendors(validPending);
       setAllUsers(validUsers);
