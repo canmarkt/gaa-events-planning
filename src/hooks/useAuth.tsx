@@ -133,10 +133,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             first_name: data.firstName,
             last_name: data.lastName,
             role: data.userType,
-            company_name: data.companyName,
-            services: data.services,
-            wedding_date: data.weddingDate,
-            partner_name: data.partnerName,
+            company_name: data.companyName || null,
+            services: data.services ? data.services.join(',') : null,
+            wedding_date: data.weddingDate || null,
+            partner_name: data.partnerName || null,
           }
         }
       });
