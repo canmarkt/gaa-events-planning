@@ -1,144 +1,172 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const AdminRegistration = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: ''
+    email: "admin@weddingpro.com",
+    password: "admin123",
+    confirmPassword: "admin123",
+    firstName: "Default",
+    lastName: "Admin"
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { register, isLoading } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // Register the user with Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            role: 'admin'
-          }
-        }
-      });
-
-      if (error) throw error;
-
+    
+    if (formData.password !== formData.confirmPassword) {
       toast({
-        title: "Admin account created successfully!",
-        description: "You can now log in with your admin credentials.",
-      });
-
-      // Clear the form
-      setFormData({
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: ''
-      });
-
-    } catch (error: any) {
-      console.error('Admin registration error:', error);
-      toast({
-        title: "Registration failed",
-        description: error.message || "Failed to create admin account",
+        title: "Error",
+        description: "Passwords don't match!",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
+      return;
+    }
+
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        userType: 'admin'
+      });
+      
+      toast({
+        title: "Success",
+        description: "Admin account created successfully! You can now log in.",
+      });
+      
+      // Redirect to auth page after successful registration
+      navigate('/auth');
+    } catch (error: any) {
+      toast({
+        title: "Registration Failed",
+        description: error.message || "An error occurred during admin registration",
+        variant: "destructive"
+      });
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+  const updateFormData = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Create Admin Account</CardTitle>
-        <CardDescription>
-          Create your admin account to manage vendors and customers
+        <CardTitle className="text-2xl text-center bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          Create Admin Account
+        </CardTitle>
+        <CardDescription className="text-center">
+          Set up the first admin account for WeddingPro
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-2">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                name="firstName"
-                type="text"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="firstName"
+                  placeholder="First name"
+                  value={formData.firstName}
+                  onChange={(e) => updateFormData('firstName', e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
               <Input
                 id="lastName"
-                name="lastName"
-                type="text"
+                placeholder="Last name"
                 value={formData.lastName}
-                onChange={handleChange}
+                onChange={(e) => updateFormData('lastName', e.target.value)}
                 required
-                disabled={isLoading}
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              disabled={isLoading}
-            />
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter admin email"
+                value={formData.email}
+                onChange={(e) => updateFormData('email', e.target.value)}
+                className="pl-10"
+                required
+              />
+            </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              disabled={isLoading}
-              minLength={6}
-            />
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Create password"
+                value={formData.password}
+                onChange={(e) => updateFormData('password', e.target.value)}
+                className="pl-10 pr-10"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-400" />
+                )}
+              </button>
+            </div>
           </div>
-          
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm password"
+                value={formData.confirmPassword}
+                onChange={(e) => updateFormData('confirmPassword', e.target.value)}
+                className="pl-10"
+                required
+              />
+            </div>
+          </div>
+
           <Button 
             type="submit" 
             className="w-full bg-gradient-to-r from-pink-500 to-purple-600"
             disabled={isLoading}
           >
-            {isLoading ? "Creating Admin Account..." : "Create Admin Account"}
+            {isLoading ? "Creating admin account..." : "Create Admin Account"}
           </Button>
         </form>
       </CardContent>

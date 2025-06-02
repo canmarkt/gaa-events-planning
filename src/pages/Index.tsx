@@ -1,69 +1,48 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Calendar, Users, DollarSign, Camera, Gift, MapPin, Star, LogIn, UserPlus } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { Heart, Users, Calendar, Gift, DollarSign, Camera } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
 
 const Index = () => {
-  const { isAuthenticated, user, profile } = useAuth();
+  const { hasAdmin, isLoading } = useAdminCheck();
+  const navigate = useNavigate();
 
-  const features = [
-    {
-      icon: Calendar,
-      title: "Smart Planning",
-      description: "AI-powered timeline and task management for your perfect day"
-    },
-    {
-      icon: Users,
-      title: "Guest Management",
-      description: "RSVP tracking, seating arrangements, and communication tools"
-    },
-    {
-      icon: DollarSign,
-      title: "Budget Tracker",
-      description: "Real-time expense tracking with smart recommendations"
-    },
-    {
-      icon: Camera,
-      title: "Vendor Marketplace",
-      description: "Connect with top-rated photographers, caterers, and more"
-    },
-    {
-      icon: Gift,
-      title: "Gift Registry",
-      description: "Integrated registry with multiple retailers and cash options"
-    },
-    {
-      icon: MapPin,
-      title: "Virtual Tools",
-      description: "3D venue tours, AR try-ons, and interactive planning"
+  useEffect(() => {
+    // If no admin exists, redirect to admin setup
+    if (!isLoading && hasAdmin === false) {
+      navigate('/admin-setup');
     }
-  ];
+  }, [hasAdmin, isLoading, navigate]);
 
-  const testimonials = [
-    {
-      name: "Sarah & Michael",
-      text: "WeddingPro made our planning so much easier! The vendor marketplace helped us find amazing photographers.",
-      rating: 5
-    },
-    {
-      name: "Emma & David",
-      text: "The budget tracker kept us on track, and the seating planner was a lifesaver!",
-      rating: 5
-    },
-    {
-      name: "Lisa & Robert",
-      text: "We loved the virtual try-on feature. It saved us so much time!",
-      rating: 5
-    }
-  ];
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Heart className="h-8 w-8 text-pink-500 mx-auto mb-4 animate-pulse" />
+          <p>Loading WeddingPro...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no admin exists, this will redirect, so we can show loading
+  if (hasAdmin === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Heart className="h-8 w-8 text-pink-500 mx-auto mb-4 animate-pulse" />
+          <p>Setting up WeddingPro...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-white/20">
+      {/* Navigation */}
+      <nav className="bg-white/80 backdrop-blur-md border-b border-white/20">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Heart className="h-8 w-8 text-pink-500" />
@@ -71,57 +50,33 @@ const Index = () => {
               WeddingPro
             </span>
           </div>
-          <nav className="hidden md:flex space-x-6">
-            <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Features</a>
-            <a href="#testimonials" className="text-gray-600 hover:text-gray-900 transition-colors">Reviews</a>
-            <Link to="/vendors" className="text-gray-600 hover:text-gray-900 transition-colors">Vendors</Link>
-            <Link to="/forum" className="text-gray-600 hover:text-gray-900 transition-colors">Community</Link>
-          </nav>
-          <div className="flex space-x-2">
-            {isAuthenticated ? (
-              <Link to={profile?.role === 'vendor' ? '/vendor-dashboard' : '/dashboard'}>
-                <Button className="bg-gradient-to-r from-pink-500 to-purple-600">
-                  Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link to="/auth">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <LogIn className="h-4 w-4" />
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/auth">
-                  <Button className="bg-gradient-to-r from-pink-500 to-purple-600 flex items-center gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    Get Started
-                  </Button>
-                </Link>
-              </>
-            )}
+          <div className="space-x-4">
+            <Link to="/auth">
+              <Button variant="outline">Sign In</Button>
+            </Link>
+            <Link to="/auth">
+              <Button className="bg-gradient-to-r from-pink-500 to-purple-600">Get Started</Button>
+            </Link>
           </div>
         </div>
-      </header>
+      </nav>
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-          We Make Things Happen
+        <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          Plan Your Perfect Wedding
         </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Unlock the secrets to a stress-free wedding.
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          From vendor bookings to guest management, WeddingPro helps you organize every detail of your special day with ease and elegance.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          {!isAuthenticated && (
-            <Link to="/auth">
-              <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-600 text-lg px-8 py-4">
-                Start Planning Today
-              </Button>
-            </Link>
-          )}
+        <div className="space-x-4">
+          <Link to="/auth">
+            <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-600">
+              Start Planning
+            </Button>
+          </Link>
           <Link to="/vendors">
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4">
+            <Button size="lg" variant="outline">
               Browse Vendors
             </Button>
           </Link>
@@ -129,118 +84,67 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="container mx-auto px-4 py-20">
-        <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-          All-In-One Tools for Your Wedding
+      <section className="container mx-auto px-4 py-16">
+        <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+          Everything You Need
         </h2>
-        <p className="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto">
-          We combine all the tools and services you need.
-        </p>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <feature.icon className="h-12 w-12 text-pink-500 mb-4" />
-                <CardTitle>{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base">{feature.description}</CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="bg-white/50 py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Loved by Couples Everywhere
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index}>
-                <CardContent className="p-6">
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 mb-4">"{testimonial.text}"</p>
-                  <p className="font-semibold text-pink-600">{testimonial.name}</p>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 text-center border border-white/20">
+            <Users className="h-12 w-12 text-pink-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Vendor Management</h3>
+            <p className="text-gray-600">Find, book, and manage all your wedding vendors in one place.</p>
+          </div>
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 text-center border border-white/20">
+            <Calendar className="h-12 w-12 text-purple-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Timeline Planning</h3>
+            <p className="text-gray-600">Create and track your wedding timeline and important milestones.</p>
+          </div>
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 text-center border border-white/20">
+            <DollarSign className="h-12 w-12 text-green-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Budget Tracking</h3>
+            <p className="text-gray-600">Stay on top of your wedding expenses with detailed budget management.</p>
+          </div>
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 text-center border border-white/20">
+            <Gift className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Gift Registry</h3>
+            <p className="text-gray-600">Create and manage your wedding gift registry with ease.</p>
+          </div>
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 text-center border border-white/20">
+            <Users className="h-12 w-12 text-indigo-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Guest Management</h3>
+            <p className="text-gray-600">Track RSVPs, dietary requirements, and seating arrangements.</p>
+          </div>
+          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 text-center border border-white/20">
+            <Camera className="h-12 w-12 text-pink-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Virtual Try-On</h3>
+            <p className="text-gray-600">Visualize your wedding look with our virtual try-on feature.</p>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      {!isAuthenticated && (
-        <section className="container mx-auto px-4 py-20 text-center">
-          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Ready to Start Planning?
-          </h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join thousands who planned their perfect day.
-          </p>
+      <section className="container mx-auto px-4 py-16 text-center">
+        <div className="bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg p-8 text-white">
+          <h2 className="text-3xl font-bold mb-4">Ready to Start Planning?</h2>
+          <p className="text-xl mb-6">Join thousands of couples who have planned their perfect day with WeddingPro.</p>
           <Link to="/auth">
-            <Button size="lg" className="bg-gradient-to-r from-pink-500 to-purple-600 text-lg px-8 py-4">
-              Create Your Free Account
+            <Button size="lg" variant="secondary">
+              Get Started Free
             </Button>
           </Link>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Heart className="h-8 w-8 text-pink-500" />
-                <span className="text-2xl font-bold">WeddingPro</span>
-              </div>
-              <p className="text-gray-400">
-                We Make Things Happen 
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Features</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link to="/budget" className="hover:text-white transition-colors">Budget Tracker</Link></li>
-                <li><Link to="/vendors" className="hover:text-white transition-colors">Vendor Marketplace</Link></li>
-                <li><Link to="/seating" className="hover:text-white transition-colors">Seating Planner</Link></li>
-                <li><Link to="/registry" className="hover:text-white transition-colors">Gift Registry</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Community</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link to="/forum" className="hover:text-white transition-colors">Forum</Link></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Success Stories</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Contact</h3>
-              <ul className="space-y-2 text-gray-400">
-                <li>support@weddingpro.com</li>
-                <li>1-800-WEDDING</li>
-                <li>Follow us on social media</li>
-              </ul>
-            </div>
+      <footer className="bg-white/80 backdrop-blur-md border-t border-white/20">
+        <div className="container mx-auto px-4 py-8 text-center text-gray-600">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Heart className="h-6 w-6 text-pink-500" />
+            <span className="text-lg font-semibold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              WeddingPro
+            </span>
           </div>
-          
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 GAA Events. All rights reserved.</p>
-          </div>
+          <p>&copy; 2024 WeddingPro. All rights reserved.</p>
         </div>
       </footer>
     </div>
