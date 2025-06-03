@@ -85,6 +85,7 @@ const AppRoutes = () => {
 
   console.log('Current user profile:', profile);
   console.log('User role:', profile?.role);
+  console.log('Is authenticated:', isAuthenticated);
 
   return (
     <Routes>
@@ -92,7 +93,7 @@ const AppRoutes = () => {
       <Route path="/auth" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Auth />} />
       <Route path="/admin-setup" element={<AdminSetup />} />
       
-      {/* Protected Routes */}
+      {/* Protected Routes with Role-based Redirects */}
       <Route path="/dashboard" element={
         <ProtectedRoute>
           {profile?.role === 'admin' ? (
@@ -108,31 +109,37 @@ const AppRoutes = () => {
       } />
       
       <Route path="/admin" element={
-        <RoleBasedRoute allowedRoles={['admin']}>
-          <AdminDashboard />
-        </RoleBasedRoute>
+        <ProtectedRoute>
+          <RoleBasedRoute allowedRoles={['admin']}>
+            <AdminDashboard />
+          </RoleBasedRoute>
+        </ProtectedRoute>
       } />
       
       <Route path="/vendor-dashboard" element={
-        <ApprovalRequiredRoute>
-          <RoleBasedRoute allowedRoles={['vendor']}>
-            <VendorDashboard />
-          </RoleBasedRoute>
-        </ApprovalRequiredRoute>
+        <ProtectedRoute>
+          <ApprovalRequiredRoute>
+            <RoleBasedRoute allowedRoles={['vendor']}>
+              <VendorDashboard />
+            </RoleBasedRoute>
+          </ApprovalRequiredRoute>
+        </ProtectedRoute>
       } />
       
       <Route path="/pending-approval" element={
-        <RoleBasedRoute allowedRoles={['vendor']}>
-          <PendingApproval />
-        </RoleBasedRoute>
+        <ProtectedRoute>
+          <RoleBasedRoute allowedRoles={['vendor']}>
+            <PendingApproval />
+          </RoleBasedRoute>
+        </ProtectedRoute>
       } />
       
       <Route path="/booking" element={
-        <ApprovalRequiredRoute>
-          <ProtectedRoute>
+        <ProtectedRoute>
+          <ApprovalRequiredRoute>
             <BookingManager />
-          </ProtectedRoute>
-        </ApprovalRequiredRoute>
+          </ApprovalRequiredRoute>
+        </ProtectedRoute>
       } />
       
       <Route path="/seating" element={
