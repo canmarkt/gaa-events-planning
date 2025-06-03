@@ -52,13 +52,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, email, first_name, last_name, role, is_approved, company_name, services, wedding_date, partner_name')
+        .select('*')
         .eq('id', userId)
         .single();
 
       if (error) throw error;
       
-      // Filter out the unwanted enum value and ensure type safety
       if (data && (data.role === 'admin' || data.role === 'vendor' || data.role === 'couple')) {
         setProfile(data as UserProfile);
       } else {
@@ -75,6 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -82,7 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Fetch profile data after setting user
           setTimeout(() => {
             fetchProfile(session.user.id);
-          }, 0);
+          }, 100);
         } else {
           setProfile(null);
         }
@@ -93,6 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -108,12 +109,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
+      console.log('Attempting login for:', email);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+      console.log('Login successful');
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -125,7 +128,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (data: RegisterData) => {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      console.log('Starting registration for:', data.email, 'as role:', data.userType);
+      
+      // First, create the user in Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -133,15 +139,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             first_name: data.firstName,
             last_name: data.lastName,
             role: data.userType,
-            company_name: data.companyName || null,
-            services: data.services ? data.services.join(',') : null,
-            wedding_date: data.weddingDate || null,
-            partner_name: data.partnerName || null,
           }
         }
       });
 
-      if (error) throw error;
+      if (authError) {
+        console.error('Auth signup error:', authError);
+        throw authError;
+      }
+
+      console.log('Auth user created:', authData.user?.id);
+
+      // If we have additional data, update the profile after the trigger creates it
+      if (authData.user && (data.companyName || data.services || data.weddingDate || data.partnerName)) {
+        console.log('Updating profile with additional data');
+        
+        // Wait a moment for the trigger to create the profile
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const updateData: any = {};
+        if (data.companyName) updateData.company_name = data.companyName;
+        if (data.services && data.services.length > 0) updateData.services = data.services;
+        if (data.weddingDate) updateData.wedding_date = data.weddingDate;
+        if (data.partnerName) updateData.partner_name = data.partnerName;
+
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update(updateData)
+          .eq('id', authData.user.id);
+
+        if (updateError) {
+          console.error('Profile update error:', updateError);
+          // Don't throw here, the user was created successfully
+        } else {
+          console.log('Profile updated successfully');
+        }
+      }
+
     } catch (error) {
       console.error('Registration failed:', error);
       throw error;
