@@ -4,18 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const AdminRegistration = () => {
   const [formData, setFormData] = useState({
-    email: "admin@weddingpro.com",
-    password: "admin123",
-    confirmPassword: "admin123",
-    firstName: "Default",
-    lastName: "Admin"
+    email: "",
+    password: "",
+    confirmPassword: "",
+    firstName: "Admin",
+    lastName: "User"
   });
   const [showPassword, setShowPassword] = useState(false);
   const { register, isLoading } = useAuth();
@@ -34,6 +35,15 @@ const AdminRegistration = () => {
       return;
     }
 
+    if (formData.password.length < 6) {
+      toast({
+        title: "Error", 
+        description: "Password must be at least 6 characters long",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       await register({
         email: formData.email,
@@ -45,12 +55,14 @@ const AdminRegistration = () => {
       
       toast({
         title: "Success",
-        description: "Admin account created successfully! You can now log in.",
+        description: "Admin account created! Please check your email to confirm your account, then return to sign in.",
+        duration: 7000,
       });
       
       // Redirect to auth page after successful registration
       navigate('/auth');
     } catch (error: any) {
+      console.error('Admin registration error:', error);
       toast({
         title: "Registration Failed",
         description: error.message || "An error occurred during admin registration",
@@ -70,10 +82,17 @@ const AdminRegistration = () => {
           Create Admin Account
         </CardTitle>
         <CardDescription className="text-center">
-          Set up the first admin account for WeddingPro
+          Set up the first admin account for GAA Events - WeddingPro
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <Alert className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Use your real email address. You'll need to confirm it before you can sign in.
+          </AlertDescription>
+        </Alert>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-2">
@@ -103,13 +122,13 @@ const AdminRegistration = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Admin Email Address</Label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter admin email"
+                placeholder="Enter your real email address"
                 value={formData.email}
                 onChange={(e) => updateFormData('email', e.target.value)}
                 className="pl-10"
@@ -125,10 +144,11 @@ const AdminRegistration = () => {
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Create password"
+                placeholder="Create password (min 6 characters)"
                 value={formData.password}
                 onChange={(e) => updateFormData('password', e.target.value)}
                 className="pl-10 pr-10"
+                minLength={6}
                 required
               />
               <button
