@@ -83,6 +83,9 @@ const AppRoutes = () => {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
+  console.log('Current user profile:', profile);
+  console.log('User role:', profile?.role);
+
   return (
     <Routes>
       <Route path="/" element={<Index />} />
@@ -92,12 +95,15 @@ const AppRoutes = () => {
       {/* Protected Routes */}
       <Route path="/dashboard" element={
         <ProtectedRoute>
-          {profile?.role === 'vendor' && !profile.is_approved ? 
-            <Navigate to="/pending-approval" replace /> : 
-            profile?.role === 'vendor' ? 
-              <Navigate to="/vendor-dashboard" replace /> : 
-              <Dashboard />
-          }
+          {profile?.role === 'admin' ? (
+            <Navigate to="/admin" replace />
+          ) : profile?.role === 'vendor' && !profile.is_approved ? (
+            <Navigate to="/pending-approval" replace />
+          ) : profile?.role === 'vendor' ? (
+            <Navigate to="/vendor-dashboard" replace />
+          ) : (
+            <Dashboard />
+          )}
         </ProtectedRoute>
       } />
       

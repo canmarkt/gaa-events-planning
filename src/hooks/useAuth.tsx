@@ -50,6 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchProfile = async (userId: string) => {
     try {
+      console.log('Fetching profile for user:', userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -58,7 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error;
       
+      console.log('Profile data received:', data);
+      
       if (data && (data.role === 'admin' || data.role === 'vendor' || data.role === 'couple')) {
+        console.log('Setting profile with role:', data.role);
         setProfile(data as UserProfile);
       } else {
         console.error('Invalid role received from database:', data?.role);
@@ -148,7 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw authError;
       }
 
-      console.log('Auth user created:', authData.user?.id);
+      console.log('Auth user created:', authData.user?.id, 'with role:', data.userType);
 
       // If we have additional data, update the profile after the trigger creates it
       if (authData.user && (data.companyName || data.services || data.weddingDate || data.partnerName)) {
