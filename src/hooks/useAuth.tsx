@@ -51,24 +51,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = async (userId: string) => {
     try {
       console.log('Fetching profile for user:', userId);
-      const { data, error } = await supabase
+      const { data, error, status } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
+      if (error && status !== 406) {
+        // 406 Not Acceptable, usually means policy block or not found
+        console.error('Profile fetch error:', error, 'Status:', status);
+        setProfile(null);
+        return;
+      }
 
-      if (error) {
-        console.error('Profile fetch error:', error);
-        if (error.code === 'PGRST116') {
-          console.log('Profile not found, user may need to complete registration');
-          setProfile(null);
-          return;
-        }
-        throw error;
+      if (!data) {
+        console.warn('Profile not found for user:', userId);
+        setProfile(null);
+        return;
       }
       
       console.log('Profile data received:', data);
-      
       if (data && (data.role === 'admin' || data.role === 'vendor' || data.role === 'couple')) {
         console.log('Setting profile with role:', data.role);
         setProfile(data as UserProfile);
