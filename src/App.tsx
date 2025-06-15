@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -61,8 +62,11 @@ const RoleBasedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
     </div>;
   }
   
+  console.log('RoleBasedRoute - User role:', profile.role, 'Allowed roles:', allowedRoles);
+  
   if (!allowedRoles.includes(profile.role)) {
     // Redirect to appropriate dashboard based on role
+    console.log('Redirecting user with role:', profile.role);
     if (profile.role === 'admin') {
       return <Navigate to="/admin" replace />;
     } else if (profile.role === 'vendor') {
@@ -99,6 +103,8 @@ const ApprovalRequiredRoute = ({ children }: { children: React.ReactNode }) => {
 const AppRoutes = () => {
   const { isAuthenticated, profile, isLoading } = useAuth();
 
+  console.log('AppRoutes - isAuthenticated:', isAuthenticated, 'profile:', profile, 'isLoading:', isLoading);
+
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">
       <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500"></div>
@@ -110,23 +116,17 @@ const AppRoutes = () => {
       <Route path="/" element={<Index />} />
       <Route path="/auth" element={
         isAuthenticated ? (
+          // Redirect authenticated users to their appropriate dashboard
           profile?.role === 'admin' ? <Navigate to="/admin" replace /> :
           profile?.role === 'vendor' && !profile.is_approved ? <Navigate to="/pending-approval" replace /> :
-          profile?.role === 'vendor' ? <Navigate to="/vendor-dashboard" replace /> :
+          profile?.role === 'vendor' && profile.is_approved ? <Navigate to="/vendor-dashboard" replace /> :
+          profile?.role === 'couple' ? <Navigate to="/dashboard" replace /> :
           <Navigate to="/dashboard" replace />
         ) : <Auth />
       } />
       <Route path="/admin-setup" element={<AdminSetup />} />
       
-      {/* Protected Routes with Role-based Redirects */}
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <RoleBasedRoute allowedRoles={['couple']}>
-            <Dashboard />
-          </RoleBasedRoute>
-        </ProtectedRoute>
-      } />
-      
+      {/* Admin Routes */}
       <Route path="/admin" element={
         <ProtectedRoute>
           <RoleBasedRoute allowedRoles={['admin']}>
@@ -135,6 +135,16 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
       
+      {/* Couple Routes */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <RoleBasedRoute allowedRoles={['couple']}>
+            <Dashboard />
+          </RoleBasedRoute>
+        </ProtectedRoute>
+      } />
+      
+      {/* Vendor Routes */}
       <Route path="/vendor-dashboard" element={
         <ProtectedRoute>
           <ApprovalRequiredRoute>

@@ -95,6 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user && event !== 'SIGNED_OUT') {
+          console.log('User authenticated, fetching profile for:', session.user.id);
           // Use setTimeout to prevent auth callback issues
           setTimeout(() => {
             if (mounted) {
@@ -102,14 +103,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
           }, 100);
         } else {
+          console.log('No session or signed out, clearing profile');
           setProfile(null);
         }
         
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          setIsLoading(false);
-        } else if (event === 'SIGNED_OUT') {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     );
 
@@ -126,9 +124,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user && mounted) {
+        console.log('Found existing session, fetching profile');
         fetchProfile(session.user.id);
+      } else {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => {
@@ -152,11 +152,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       console.log('Login successful for user:', data.user?.id);
+      
+      // The auth state change listener will handle profile fetching
     } catch (error) {
       console.error('Login failed:', error);
-      throw error;
-    } finally {
       setIsLoading(false);
+      throw error;
     }
   };
 
@@ -214,11 +215,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
+      // The auth state change listener will handle the rest
     } catch (error) {
       console.error('Registration failed:', error);
-      throw error;
-    } finally {
       setIsLoading(false);
+      throw error;
     }
   };
 
@@ -274,6 +275,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isAuthenticated: !!user && !!session,
     updateProfile,
   };
+
+  console.log('AuthProvider value:', { 
+    user: !!user, 
+    profile: profile?.role, 
+    isAuthenticated: !!user && !!session,
+    isLoading 
+  });
 
   return (
     <AuthContext.Provider value={value}>
