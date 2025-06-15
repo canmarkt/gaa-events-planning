@@ -1,20 +1,23 @@
-
 import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Calendar, Gift, DollarSign, Camera } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const { hasAdmin, isLoading } = useAdminCheck();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // If no admin exists, redirect to admin setup
-    if (!isLoading && hasAdmin === false) {
+    // If no admin exists, redirect ONLY for users who are not authenticated
+    if (!isLoading && hasAdmin === false && !user) {
       navigate('/admin-setup');
     }
-  }, [hasAdmin, isLoading, navigate]);
+    // If an admin exists, do not redirect anyone, regardless of login status
+    // If the logged-in user is an admin, they can access the homepage as well
+  }, [hasAdmin, isLoading, navigate, user]);
 
   if (isLoading) {
     return (
@@ -27,18 +30,7 @@ const Index = () => {
     );
   }
 
-  // If no admin exists, this will redirect, so we can show loading
-  if (hasAdmin === false) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <Heart className="h-8 w-8 text-pink-500 mx-auto mb-4 animate-pulse" />
-          <p>Setting up WeddingPro...</p>
-        </div>
-      </div>
-    );
-  }
-
+  // If no admin exists, this will redirect (above); otherwise, homepage is visible to all.
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
       {/* Navigation */}
