@@ -1,259 +1,192 @@
-import React, { useState } from 'react';
+
+import React from 'react';
+import { Heart, Calendar, DollarSign, Users, MessageCircle, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Calendar, DollarSign, Users, MessageSquare, Settings, Bell, Camera, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import ProfileMenu from "@/components/layout/ProfileMenu";
 
 const VendorDashboard = () => {
-  const { user, profile, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState("overview");
-
-  const upcomingBookings = [
-    {
-      id: 1,
-      coupleName: "Sarah & Michael Johnson",
-      eventDate: "2024-08-15",
-      service: "Photography",
-      status: "confirmed",
-      payment: "paid",
-      amount: 2500
-    },
-    {
-      id: 2,
-      coupleName: "Emma & David Wilson",
-      eventDate: "2024-09-22",
-      service: "Photography + Videography",
-      status: "pending",
-      payment: "deposit",
-      amount: 3500
-    },
-    {
-      id: 3,
-      coupleName: "Lisa & Robert Brown",
-      eventDate: "2024-10-05",
-      service: "Photography",
-      status: "confirmed",
-      payment: "pending",
-      amount: 2200
-    }
-  ];
-
-  const recentMessages = [
-    {
-      id: 1,
-      from: "Sarah Johnson",
-      message: "Can we schedule a pre-wedding photoshoot?",
-      time: "2 hours ago",
-      unread: true
-    },
-    {
-      id: 2,
-      from: "Emma Wilson",
-      message: "Thank you for the proposal! We'd like to proceed.",
-      time: "1 day ago",
-      unread: false
-    }
-  ];
-
-  const stats = {
-    totalBookings: 12,
-    thisMonthRevenue: 8750,
-    pendingPayments: 3,
-    avgRating: 4.9
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-white/20">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Heart className="h-8 w-8 text-pink-500" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-              WeddingPro
-            </span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Bell className="h-6 w-6 text-gray-600" />
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-600">Welcome, {profile?.first_name}</span>
-              <Button variant="outline" onClick={logout}>Logout</Button>
-            </div>
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo and Brand */}
+            <Link to="/" className="flex items-center space-x-2">
+              <Heart className="h-8 w-8 text-pink-500" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                WeddingPro
+              </span>
+              <span className="text-sm text-gray-500 ml-2">Vendor Portal</span>
+            </Link>
+            
+            {/* Profile Menu */}
+            <ProfileMenu />
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Vendor Dashboard
-          </h1>
-          <p className="text-gray-600">Manage your bookings, payments, and client communications</p>
-        </div>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-0">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Vendor Dashboard</h1>
+            <p className="text-gray-600">Manage your bookings, clients, and business profile.</p>
+          </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Bookings</p>
-                  <p className="text-2xl font-bold">{stats.totalBookings}</p>
-                </div>
-                <Calendar className="h-8 w-8 text-pink-500" />
-              </div>
-            </CardContent>
-          </Card>
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">12</div>
+                <p className="text-xs text-muted-foreground">+2 from last month</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Pending Payments</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">$8,500</div>
+                <p className="text-xs text-muted-foreground">+15% from last month</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Active Clients</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">24</div>
+                <p className="text-xs text-muted-foreground">+3 new this month</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Messages</CardTitle>
+                <MessageCircle className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">7</div>
+                <p className="text-xs text-muted-foreground">3 unread</p>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">This Month Revenue</p>
-                  <p className="text-2xl font-bold">${stats.thisMonthRevenue.toLocaleString()}</p>
-                </div>
-                <DollarSign className="h-8 w-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Pending Payments</p>
-                  <p className="text-2xl font-bold">{stats.pendingPayments}</p>
-                </div>
-                <Clock className="h-8 w-8 text-yellow-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Average Rating</p>
-                  <p className="text-2xl font-bold">{stats.avgRating}</p>
-                </div>
-                <Users className="h-8 w-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Upcoming Bookings */}
-          <div className="lg:col-span-2">
+          {/* Main Dashboard Sections */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Upcoming Events */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Upcoming Bookings
-                </CardTitle>
+                <CardTitle>Upcoming Events</CardTitle>
+                <CardDescription>Your scheduled events and bookings</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {upcomingBookings.map((booking) => (
-                    <div key={booking.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-semibold">{booking.coupleName}</h3>
-                          <p className="text-sm text-gray-600">
-                            {new Date(booking.eventDate).toLocaleDateString('en-US', {
-                              weekday: 'long',
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-green-600">${booking.amount.toLocaleString()}</p>
-                          <div className="flex gap-2 mt-1">
-                            <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>
-                              {booking.status}
-                            </Badge>
-                            <Badge variant={booking.payment === 'paid' ? 'default' : booking.payment === 'deposit' ? 'secondary' : 'destructive'}>
-                              {booking.payment}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">{booking.service}</p>
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="outline">View Details</Button>
-                        <Button size="sm" className="bg-gradient-to-r from-pink-500 to-purple-600">
-                          Contact Client
-                        </Button>
-                      </div>
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-semibold">Sarah & John Wedding</h4>
+                      <p className="text-sm text-gray-600">June 15, 2024 • Photography</p>
                     </div>
-                  ))}
+                    <Button size="sm" variant="outline">View Details</Button>
+                  </div>
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-semibold">Emma & Mike Reception</h4>
+                      <p className="text-sm text-gray-600">June 22, 2024 • Catering</p>
+                    </div>
+                    <Button size="sm" variant="outline">View Details</Button>
+                  </div>
+                  <div className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-semibold">Lisa & David Ceremony</h4>
+                      <p className="text-sm text-gray-600">July 5, 2024 • Flowers</p>
+                    </div>
+                    <Button size="sm" variant="outline">View Details</Button>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Link to="/booking">
+                    <Button className="w-full">View All Bookings</Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Messages */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Messages</CardTitle>
+                <CardDescription>Communication with your clients</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3 p-4 border rounded-lg">
+                    <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                      S
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-sm">Sarah Johnson</h4>
+                      <p className="text-sm text-gray-600">Can we schedule a consultation for next week?</p>
+                      <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3 p-4 border rounded-lg">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                      E
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-sm">Emma Wilson</h4>
+                      <p className="text-sm text-gray-600">Thank you for the beautiful flowers!</p>
+                      <p className="text-xs text-gray-400 mt-1">1 day ago</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Button variant="outline" className="w-full">View All Messages</Button>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Recent Messages & Quick Actions */}
-          <div className="space-y-6">
-            {/* Recent Messages */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5" />
-                  Recent Messages
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recentMessages.map((message) => (
-                    <div key={message.id} className="border-b pb-3 last:border-b-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-medium text-sm">{message.from}</span>
-                        {message.unread && (
-                          <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-600 mb-1">{message.message}</p>
-                      <p className="text-xs text-gray-400">{message.time}</p>
-                    </div>
-                  ))}
-                </div>
-                <Button variant="outline" className="w-full mt-4">
-                  View All Messages
-                </Button>
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                <h3 className="font-semibold">Calendar</h3>
+                <p className="text-sm text-gray-600">Manage your schedule</p>
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  View Calendar
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Camera className="h-4 w-4 mr-2" />
-                  Update Portfolio
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Account Settings
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <DollarSign className="h-4 w-4 mr-2" />
-                  Payment History
-                </Button>
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <DollarSign className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                <h3 className="font-semibold">Payments</h3>
+                <p className="text-sm text-gray-600">Track earnings</p>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardContent className="p-6 text-center">
+                <Settings className="h-8 w-8 text-gray-500 mx-auto mb-2" />
+                <h3 className="font-semibold">Profile</h3>
+                <p className="text-sm text-gray-600">Update your info</p>
               </CardContent>
             </Card>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

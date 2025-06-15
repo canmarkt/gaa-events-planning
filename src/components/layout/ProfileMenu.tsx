@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
 
 const ProfileMenu = () => {
   const { user, profile, logout } = useAuth();
@@ -20,9 +21,11 @@ const ProfileMenu = () => {
   const handleSignOut = async () => {
     try {
       await logout();
+      toast.success("Signed out successfully");
       navigate('/auth');
     } catch (error) {
       console.error('Sign out error:', error);
+      toast.error("Error signing out");
     }
   };
 

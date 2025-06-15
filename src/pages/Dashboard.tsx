@@ -1,236 +1,190 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { Heart, Calendar, Users, DollarSign, Gift, CheckSquare, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Heart, Calendar, Users, Gift, DollarSign, Camera, Upload, Edit3 } from "lucide-react";
 import { Link } from "react-router-dom";
+import ProfileMenu from "@/components/layout/ProfileMenu";
 
 const Dashboard = () => {
-  const [weddingDate, setWeddingDate] = useState("2024-08-15");
-  const [coupleNames, setCoupleNames] = useState("Sarah & Michael");
-  const [countdownDays, setCountdownDays] = useState(142);
-
-  const quickActions = [
-    { title: "Seating Chart", icon: <Users className="h-5 w-5" />, link: "/seating", color: "bg-blue-500" },
-    { title: "Gift Registry", icon: <Gift className="h-5 w-5" />, link: "/registry", color: "bg-green-500" },
-    { title: "Budget Tracker", icon: <DollarSign className="h-5 w-5" />, link: "/budget", color: "bg-yellow-500" },
-    { title: "Virtual Try-On", icon: <Camera className="h-5 w-5" />, link: "/tryon", color: "bg-purple-500" },
-  ];
-
-  const recentActivity = [
-    { action: "Guest RSVP received", time: "2 hours ago", type: "rsvp" },
-    { action: "Vendor payment scheduled", time: "1 day ago", type: "payment" },
-    { action: "Seating chart updated", time: "2 days ago", type: "seating" },
-    { action: "New gift added to registry", time: "3 days ago", type: "gift" },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-white/20">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Heart className="h-8 w-8 text-pink-500" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-              WeddingPro
-            </span>
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo and Brand */}
+            <Link to="/" className="flex items-center space-x-2">
+              <Heart className="h-8 w-8 text-pink-500" />
+              <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                WeddingPro
+              </span>
+            </Link>
+            
+            {/* Profile Menu */}
+            <ProfileMenu />
           </div>
-          <nav className="hidden md:flex space-x-6">
-            <Link to="/" className="text-gray-600 hover:text-gray-900 transition-colors">Home</Link>
-            <Link to="/seating" className="text-gray-600 hover:text-gray-900 transition-colors">Seating</Link>
-            <Link to="/registry" className="text-gray-600 hover:text-gray-900 transition-colors">Registry</Link>
-            <Link to="/budget" className="text-gray-600 hover:text-gray-900 transition-colors">Budget</Link>
-            <Link to="/vendors" className="text-gray-600 hover:text-gray-900 transition-colors">Vendors</Link>
-          </nav>
-          <Button variant="outline">Profile</Button>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Welcome back, {coupleNames}!
-          </h1>
-          <p className="text-gray-600">Your wedding planning dashboard</p>
-        </div>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="px-4 py-6 sm:px-0">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Your Wedding Dashboard</h1>
+            <p className="text-gray-600">Plan your perfect day with our comprehensive wedding tools.</p>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Countdown Card */}
-            <Card className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
+          {/* Wedding Countdown */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Clock className="mr-2 h-5 w-5" />
+                Wedding Countdown
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-pink-600 mb-2">150</div>
+                <p className="text-gray-600">Days until your special day!</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-6 w-6" />
-                  Wedding Countdown
+                <CardTitle className="flex items-center text-lg">
+                  <Users className="mr-2 h-5 w-5 text-blue-500" />
+                  Guest Management
                 </CardTitle>
+                <CardDescription>Manage your guest list and RSVPs</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="text-center">
-                  <div className="text-6xl font-bold mb-2">{countdownDays}</div>
-                  <div className="text-pink-100">Days to go!</div>
-                  <div className="mt-4">
-                    <Input
-                      type="date"
-                      value={weddingDate}
-                      onChange={(e) => setWeddingDate(e.target.value)}
-                      className="bg-white/20 border-white/30 text-white placeholder-pink-100"
-                    />
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Total Guests:</span>
+                    <span className="font-semibold">120</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Confirmed:</span>
+                    <span className="font-semibold text-green-600">85</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Pending:</span>
+                    <span className="font-semibold text-yellow-600">35</span>
                   </div>
                 </div>
+                <Link to="/seating">
+                  <Button className="w-full">Manage Seating</Button>
+                </Link>
               </CardContent>
             </Card>
 
-            {/* Customizable Landing Page */}
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Edit3 className="h-5 w-5" />
-                  Your Wedding Page
+                <CardTitle className="flex items-center text-lg">
+                  <DollarSign className="mr-2 h-5 w-5 text-green-500" />
+                  Budget Tracker
                 </CardTitle>
-                <CardDescription>
-                  Customize your personal wedding page for guests
-                </CardDescription>
+                <CardDescription>Track your wedding expenses</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Couple Names</label>
-                  <Input
-                    value={coupleNames}
-                    onChange={(e) => setCoupleNames(e.target.value)}
-                    placeholder="Enter couple names"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Upload className="h-4 w-4" />
-                    Upload Photos
-                  </Button>
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Camera className="h-4 w-4" />
-                    Add Videos
-                  </Button>
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">Preview</h3>
-                  <div className="text-sm text-gray-600">
-                    Your guests will see a beautiful page with your photos, wedding details, 
-                    RSVP form, and countdown timer.
+              <CardContent>
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Total Budget:</span>
+                    <span className="font-semibold">$25,000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Spent:</span>
+                    <span className="font-semibold text-red-600">$18,500</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Remaining:</span>
+                    <span className="font-semibold text-green-600">$6,500</span>
                   </div>
                 </div>
-
-                <Button className="w-full bg-gradient-to-r from-pink-500 to-purple-600">
-                  Customize Page
-                </Button>
+                <Link to="/budget">
+                  <Button className="w-full">View Budget</Button>
+                </Link>
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>
-                  Jump to your most-used features
-                </CardDescription>
+                <CardTitle className="flex items-center text-lg">
+                  <Gift className="mr-2 h-5 w-5 text-purple-500" />
+                  Gift Registry
+                </CardTitle>
+                <CardDescription>Manage your wedding registry</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  {quickActions.map((action, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      className="h-20 flex flex-col items-center gap-2 hover:bg-gray-50"
-                      asChild
-                    >
-                      <Link to={action.link}>
-                        <div className={`${action.color} p-2 rounded-full text-white`}>
-                          {action.icon}
-                        </div>
-                        <span className="text-sm">{action.title}</span>
-                      </Link>
-                    </Button>
-                  ))}
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Items:</span>
+                    <span className="font-semibold">42</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Purchased:</span>
+                    <span className="font-semibold text-green-600">28</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Remaining:</span>
+                    <span className="font-semibold">14</span>
+                  </div>
                 </div>
+                <Link to="/registry">
+                  <Button className="w-full">Manage Registry</Button>
+                </Link>
               </CardContent>
             </Card>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Progress Overview */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Planning Progress</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Overall Progress</span>
-                    <span>68%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-pink-500 to-purple-600 h-2 rounded-full" style={{width: '68%'}}></div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Venue</span>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">Complete</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Catering</span>
-                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">In Progress</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Photography</span>
-                    <Badge variant="secondary" className="bg-gray-100 text-gray-800">Pending</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {/* Additional Features */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link to="/vendors">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6 text-center">
+                  <Users className="h-8 w-8 text-pink-500 mx-auto mb-2" />
+                  <h3 className="font-semibold">Find Vendors</h3>
+                  <p className="text-sm text-gray-600">Browse wedding vendors</p>
+                </CardContent>
+              </Card>
+            </Link>
 
-            {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recentActivity.map((activity, index) => (
-                    <div key={index} className="flex items-center gap-3 text-sm">
-                      <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full"></div>
-                      <div className="flex-1">
-                        <div className="font-medium">{activity.action}</div>
-                        <div className="text-gray-500">{activity.time}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <Link to="/booking">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6 text-center">
+                  <Calendar className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                  <h3 className="font-semibold">Bookings</h3>
+                  <p className="text-sm text-gray-600">Manage appointments</p>
+                </CardContent>
+              </Card>
+            </Link>
 
-            {/* Weather Widget */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Wedding Day Weather</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-3xl mb-2">☀️</div>
-                  <div className="font-medium">Sunny, 75°F</div>
-                  <div className="text-sm text-gray-500">Perfect weather for your big day!</div>
-                </div>
-              </CardContent>
-            </Card>
+            <Link to="/tryon">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6 text-center">
+                  <Heart className="h-8 w-8 text-purple-500 mx-auto mb-2" />
+                  <h3 className="font-semibold">Virtual Try-On</h3>
+                  <p className="text-sm text-gray-600">Try wedding attire</p>
+                </CardContent>
+              </Card>
+            </Link>
+
+            <Link to="/forum">
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+                <CardContent className="p-6 text-center">
+                  <CheckSquare className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                  <h3 className="font-semibold">Community</h3>
+                  <p className="text-sm text-gray-600">Join discussions</p>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };
