@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,7 +27,9 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500"></div>
+    </div>;
   }
   
   if (!isAuthenticated) {
@@ -43,15 +44,32 @@ const RoleBasedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
   const { profile, isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500"></div>
+    </div>;
   }
   
   if (!isAuthenticated) {
     return <Navigate to="/auth" replace />;
   }
   
-  if (profile && !allowedRoles.includes(profile.role)) {
-    return <Navigate to="/dashboard" replace />;
+  if (!profile) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <p>Loading profile...</p>
+      </div>
+    </div>;
+  }
+  
+  if (!allowedRoles.includes(profile.role)) {
+    // Redirect to appropriate dashboard based on role
+    if (profile.role === 'admin') {
+      return <Navigate to="/admin" replace />;
+    } else if (profile.role === 'vendor') {
+      return <Navigate to={profile.is_approved ? "/vendor-dashboard" : "/pending-approval"} replace />;
+    } else {
+      return <Navigate to="/dashboard" replace />;
+    }
   }
   
   return <>{children}</>;
@@ -62,7 +80,9 @@ const ApprovalRequiredRoute = ({ children }: { children: React.ReactNode }) => {
   const { profile, isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500"></div>
+    </div>;
   }
   
   if (!isAuthenticated) {
@@ -80,31 +100,30 @@ const AppRoutes = () => {
   const { isAuthenticated, profile, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500"></div>
+    </div>;
   }
-
-  console.log('Current user profile:', profile);
-  console.log('User role:', profile?.role);
-  console.log('Is authenticated:', isAuthenticated);
 
   return (
     <Routes>
       <Route path="/" element={<Index />} />
-      <Route path="/auth" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Auth />} />
+      <Route path="/auth" element={
+        isAuthenticated ? (
+          profile?.role === 'admin' ? <Navigate to="/admin" replace /> :
+          profile?.role === 'vendor' && !profile.is_approved ? <Navigate to="/pending-approval" replace /> :
+          profile?.role === 'vendor' ? <Navigate to="/vendor-dashboard" replace /> :
+          <Navigate to="/dashboard" replace />
+        ) : <Auth />
+      } />
       <Route path="/admin-setup" element={<AdminSetup />} />
       
       {/* Protected Routes with Role-based Redirects */}
       <Route path="/dashboard" element={
         <ProtectedRoute>
-          {profile?.role === 'admin' ? (
-            <Navigate to="/admin" replace />
-          ) : profile?.role === 'vendor' && !profile.is_approved ? (
-            <Navigate to="/pending-approval" replace />
-          ) : profile?.role === 'vendor' ? (
-            <Navigate to="/vendor-dashboard" replace />
-          ) : (
+          <RoleBasedRoute allowedRoles={['couple']}>
             <Dashboard />
-          )}
+          </RoleBasedRoute>
         </ProtectedRoute>
       } />
       
@@ -134,6 +153,7 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
       
+      {/* Other protected routes */}
       <Route path="/booking" element={
         <ProtectedRoute>
           <ApprovalRequiredRoute>

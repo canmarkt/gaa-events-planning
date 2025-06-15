@@ -59,6 +59,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Profile fetch error:', error);
+        if (error.code === 'PGRST116') {
+          console.log('Profile not found, user may need to complete registration');
+          setProfile(null);
+          return;
+        }
         throw error;
       }
       
@@ -78,39 +83,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    let mounted = true;
+    
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+        
         console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
-          // Fetch profile data after setting user
+        if (session?.user && event !== 'SIGNED_OUT') {
+          // Use setTimeout to prevent auth callback issues
           setTimeout(() => {
-            fetchProfile(session.user.id);
+            if (mounted) {
+              fetchProfile(session.user.id);
+            }
           }, 100);
         } else {
           setProfile(null);
         }
         
-        setIsLoading(false);
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          setIsLoading(false);
+        } else if (event === 'SIGNED_OUT') {
+          setIsLoading(false);
+        }
       }
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting session:', error);
+        setIsLoading(false);
+        return;
+      }
+      
       console.log('Initial session check:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       
-      if (session?.user) {
+      if (session?.user && mounted) {
         fetchProfile(session.user.id);
       }
       setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -141,11 +165,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Starting registration for:', data.email, 'as role:', data.userType);
       
+      const redirectUrl = `${window.location.origin}/auth`;
+      
       // First, create the user in Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             first_name: data.firstName,
             last_name: data.lastName,
@@ -198,20 +225,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       console.log('Signing out user...');
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Logout error:', error);
-        throw error;
-      }
       
-      // Clear state
+      // Clear state first
       setUser(null);
       setProfile(null);
       setSession(null);
+      
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+        // Don't throw here as we've already cleared the state
+      }
+      
       console.log('User signed out successfully');
     } catch (error) {
       console.error('Logout failed:', error);
-      throw error;
+      // Don't throw here, we want to ensure the user is logged out locally
     }
   };
 
@@ -242,7 +271,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && !!session,
     updateProfile,
   };
 
