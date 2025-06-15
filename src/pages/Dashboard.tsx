@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import ProfileMenu from "@/components/layout/ProfileMenu";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesInsert } from "@/integrations/supabase/types"; // <-- ADD THIS
 
 const Dashboard = () => {
   const { user, profile, isLoading, updateProfile } = useAuth();
@@ -19,12 +20,13 @@ const Dashboard = () => {
     setCreating(true);
     setError(null);
 
-    const newProfile = {
+    // Type the new profile using TablesInsert<"profiles">
+    const newProfile: TablesInsert<"profiles"> = {
       id: user.id,
-      email: user.email,
+      email: user.email || "",
       first_name: "New",
       last_name: "User",
-      role: "couple",
+      role: "couple", // use the union type, which matches the required TS type!
       is_approved: true,
     };
     try {
