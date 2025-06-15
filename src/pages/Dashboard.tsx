@@ -1,12 +1,103 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Heart, Calendar, Users, DollarSign, Gift, CheckSquare, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import ProfileMenu from "@/components/layout/ProfileMenu";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const Dashboard = () => {
+  const { user, profile, isLoading, updateProfile } = useAuth();
+  const [creating, setCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Minimal fallback: create profile for logged in user if missing
+  const handleCreateProfile = async () => {
+    if (!user) return;
+    setCreating(true);
+    setError(null);
+
+    const newProfile = {
+      id: user.id,
+      email: user.email,
+      first_name: "New",
+      last_name: "User",
+      role: "couple",
+      is_approved: true,
+    };
+    try {
+      // Insert row (if doesn't exist)
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert(newProfile);
+      if (insertError && !insertError.message.includes('duplicate key')) {
+        setError(insertError.message);
+        setCreating(false);
+        return;
+      }
+      // Prompt refetch via profile reload
+      await updateProfile({});
+    } catch (e: any) {
+      setError(e.message);
+    }
+    setCreating(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-500"></div>
+      </div>
+    );
+  }
+
+  // If user logged in but profile missing
+  if (user && !profile) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="max-w-md w-full shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Heart className="mr-2 h-6 w-6 text-pink-500" />
+              Create Your WeddingPro Profile
+            </CardTitle>
+            <CardDescription>
+              We couldn't find your profile on the server. Click below to create one and unlock your dashboard.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              className="w-full"
+              onClick={handleCreateProfile}
+              disabled={creating}
+            >
+              {creating ? "Creating..." : "Create My Profile"}
+            </Button>
+            {error && <div className="text-sm text-red-500 mt-2">{error}</div>}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Heart className="mx-auto h-8 w-8 text-pink-500 mb-2" />
+          <p className="text-xl">You must be logged in to view your dashboard.</p>
+          <Link to="/auth">
+            <Button className="mt-4">Login</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Normal dashboard below
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -20,8 +111,6 @@ const Dashboard = () => {
                 WeddingPro
               </span>
             </Link>
-            
-            {/* Profile Menu */}
             <ProfileMenu />
           </div>
         </div>
@@ -190,3 +279,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
