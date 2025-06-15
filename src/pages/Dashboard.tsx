@@ -11,14 +11,14 @@ import QuickActionsGrid from "@/components/dashboard/QuickActionsGrid";
 import AdditionalFeaturesGrid from "@/components/dashboard/AdditionalFeaturesGrid";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
-// MAIN Dashboard page
 const Dashboard = () => {
   const { user, profile, isLoading, updateProfile } = useAuth();
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Minimal fallback: create profile for logged in user if missing
+  // Robust: create profile for logged in user if missing
   const handleCreateProfile = async () => {
     if (!user) return;
     setCreating(true);
@@ -26,10 +26,12 @@ const Dashboard = () => {
     const newProfile: TablesInsert<"profiles"> = {
       id: user.id,
       email: user.email || "",
-      first_name: "New",
-      last_name: "User",
-      role: "couple",
-      is_approved: true,
+      first_name: user.user_metadata?.first_name || "New",
+      last_name: user.user_metadata?.last_name || "User",
+      role: (user.user_metadata?.role === "admin" || user.user_metadata?.role === "vendor" || user.user_metadata?.role === "couple")
+        ? user.user_metadata.role
+        : "couple",
+      is_approved: user.user_metadata?.role === "vendor" ? false : true,
     };
     try {
       const { error: insertError } = await supabase
@@ -37,12 +39,26 @@ const Dashboard = () => {
         .insert(newProfile);
       if (insertError && !insertError.message.includes('duplicate key')) {
         setError(insertError.message);
+        toast({
+          title: "Profile creation error",
+          description: insertError.message,
+          variant: "destructive"
+        });
         setCreating(false);
         return;
       }
       await updateProfile({});
+      toast({
+        title: "Profile created!",
+        description: "Your profile was created. Redirecting...",
+      });
     } catch (e: any) {
       setError(e.message);
+      toast({
+        title: "Unknown error",
+        description: e.message,
+        variant: "destructive"
+      });
     }
     setCreating(false);
   };

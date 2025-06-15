@@ -1,7 +1,7 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/components/ui/use-toast";
 
 interface UserProfile {
   id: string;
@@ -47,6 +47,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const ensureProfileExists = async (user: User) => {
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+
+    if (error) {
+      console.error('[Auth] Failed to check for profile:', error);
+      toast({ title: "Error", description: "Failed to load profile (" + error.message + ")", variant: "destructive" });
+      return;
+    }
+    if (!data) {
+      // Insert a barebones profile for this user using their metadata if possible.
+      let role: 'couple' | 'vendor' | 'admin' = 'couple';
+      if (user.user_metadata && user.user_metadata.role && ['admin', 'vendor', 'couple'].includes(user.user_metadata.role)) {
+        role = user.user_metadata.role;
+      }
+      const newProfile = {
+        id: user.id,
+        email: user.email || "",
+        first_name: user.user_metadata?.first_name || "",
+        last_name: user.user_metadata?.last_name || "",
+        role: role,
+        is_approved: role === 'vendor' ? false : true,
+      };
+      const { error: createError } = await supabase.from('profiles').insert(newProfile);
+      if (createError && !createError.message.includes('duplicate key')) {
+        toast({ title: "Create Profile Error", description: createError.message, variant: "destructive" });
+        console.error('[Auth] Profile auto-creation failed:', createError);
+      }
+    }
+  };
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -96,8 +126,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user && event !== 'SIGNED_OUT') {
-          console.log('User authenticated, fetching profile for:', session.user.id);
-          // Use setTimeout to prevent auth callback issues
+          // Ensure profile exists!
+          await ensureProfileExists(session.user);
           setTimeout(() => {
             if (mounted) {
               fetchProfile(session.user.id);
@@ -125,8 +155,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user && mounted) {
-        console.log('Found existing session, fetching profile');
-        fetchProfile(session.user.id);
+        ensureProfileExists(session.user).then(() => {
+          fetchProfile(session.user.id);
+        });
       } else {
         setIsLoading(false);
       }
