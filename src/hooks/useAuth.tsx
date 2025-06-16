@@ -24,6 +24,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   isAuthenticated: boolean;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
@@ -255,6 +256,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const resetPassword = async (email: string) => {
+    try {
+      const redirectUrl = `${window.location.origin}/auth`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        console.error('Password reset error:', error);
+        throw error;
+      }
+      
+      console.log('Password reset email sent to:', email);
+    } catch (error) {
+      console.error('Password reset failed:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       console.log('Signing out user...');
@@ -304,6 +325,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     register,
     logout,
+    resetPassword,
     isAuthenticated: !!user && !!session,
     updateProfile,
   };
