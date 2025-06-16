@@ -1,7 +1,8 @@
+
 import React, { useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Heart, Users, Calendar, Gift, DollarSign, Camera } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -9,15 +10,26 @@ const Index = () => {
   const { hasAdmin, isLoading } = useAdminCheck();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
+    // Check if we're in an auth flow (password reset, etc.)
+    const type = searchParams.get('type');
+    const accessToken = searchParams.get('access_token');
+    
+    if (type === 'recovery' && accessToken) {
+      // This is a password reset flow, redirect to auth page
+      navigate('/auth');
+      return;
+    }
+
     // If no admin exists, redirect ONLY for users who are not authenticated
     if (!isLoading && hasAdmin === false && !user) {
       navigate('/admin-setup');
     }
     // If an admin exists, do not redirect anyone, regardless of login status
     // If the logged-in user is an admin, they can access the homepage as well
-  }, [hasAdmin, isLoading, navigate, user]);
+  }, [hasAdmin, isLoading, navigate, user, searchParams]);
 
   if (isLoading) {
     return (
