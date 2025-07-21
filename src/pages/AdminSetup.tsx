@@ -1,10 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import AdminRegistration from "@/components/auth/AdminRegistration";
+import LoginForm from "@/components/auth/LoginForm";
 
 const AdminSetup = () => {
+  const [showLogin, setShowLogin] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex items-center justify-center p-4">
       {/* Header */}
@@ -20,25 +23,25 @@ const AdminSetup = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-            Admin Setup
+            {showLogin ? "Admin Sign In" : "Admin Setup"}
           </h1>
           <p className="text-gray-600">
-            Create your admin account to manage the platform
+            {showLogin ? "Sign in with your admin account" : "Create your admin account to manage the platform"}
           </p>
         </div>
         
-        <AdminRegistration />
+        {showLogin ? <LoginForm /> : <AdminRegistration />}
         
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            Already have an admin account?
+            {showLogin ? "Need to create an admin account?" : "Already have an admin account?"}
           </p>
-          <Link 
-            to="/auth" 
+          <button 
+            onClick={() => setShowLogin(!showLogin)}
             className="text-pink-600 hover:text-pink-700 font-medium"
           >
-            Sign in here
-          </Link>
+            {showLogin ? "Create admin account" : "Sign in here"}
+          </button>
         </div>
       </div>
     </div>
